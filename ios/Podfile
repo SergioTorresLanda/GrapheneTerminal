@@ -1,13 +1,14 @@
 # Resolve react_native_pods.rb with node to allow for hoisting
+
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
     "react-native/scripts/react_native_pods.rb",
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-platform :ios, min_ios_version_supported
+platform :ios, '16.0'
 prepare_react_native_project!
-
+#React Native core team's modern routing system. It allows the build pipeline to inject the linkage type dynamically via environment variables during CI/CD pipelines.
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
@@ -24,11 +25,21 @@ target 'GrapheneTerminal' do
   )
 
   post_install do |installer|
+    # React Native's default installation hook
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+      :mac_catalyst_enabled => false
     )
+  
+    # The Compiler Override
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        #Fix for the C++ headers
+        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
+      end
+    end
+  
   end
 end
