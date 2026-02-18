@@ -2,18 +2,14 @@ import React from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './src/infrastructure/queryClient';
 import { SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
-// TODO: build TerminalScreen .
-// import { TerminalScreen } from './src/screens/TerminalScreen';
+import { TerminalScreen } from './src/screens/TerminalScreen';
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
-        <View style={styles.matrix}>
-          <Text style={styles.text}>The Graphene Terminal is Online.</Text>
-        </View>
-        {/* <TerminalScreen /> */}
+        <TerminalScreen />
       </SafeAreaView>
     </QueryClientProvider>
   );
