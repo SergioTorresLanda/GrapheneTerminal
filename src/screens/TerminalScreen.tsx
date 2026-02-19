@@ -1,71 +1,110 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
 import { OrderBookList } from '../components/OrderBookList';
-import { Order } from '../types/';
 import { useFPS } from '../hooks/useFPS';
-
-// 1. The Mock API (Simulating High-Frequency Data)
-// In a real app, this would be a WebSocket or REST endpoint.
-const fetchOrderBook = async (): Promise<Order[]> => {
-  // Simulate network latency (50ms - fast API)
-  await new Promise<void>(resolve => setTimeout(() => resolve(), 50));
-  
-  // Generate 1,000 orders dynamically
-  return Array.from({ length: 1000 }).map((_, i) => ({
-    id: `order-${i}-${Date.now()}`, // Unique ID every fetch
-    price: 3000 + (Math.random() * 100),
-    amount: Math.random() * 5,
-    total: Math.random() * 15000,
-    type: Math.random() > 0.5 ? 'buy' : 'sell',
-    timestamp: Date.now(),
-  }));
-};
+import NativeGrapheneCore from '../specs/NativeGrapheneCore';
+import { useOrderStream } from '../hooks/useOrderStream'; 
 
 export const TerminalScreen = () => {
    
-    const fps = useFPS(); //for performance measure
-  // 2. The Query Hook
-  // This manages the fetch cycle, caching, and background refetching.
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['orderBook'],
-    queryFn: fetchOrderBook,
-    refetchInterval: 1000, // Poll every 1 second (High Frequency)
-  });
+  const [battery, setBattery] = useState<number | null>(null);
+  const [thermal, setThermal] = useState<string>('Checking...');
+  const fps = useFPS(); // Performance Monitor
 
-  // 3. Memoized Data
-  // We strictly memoize the data passed to the list to prevent
-  // unnecessary re-calculations during re-renders.
+  useEffect(() => {
+    const monitorSystem = async () => {
+      // 1. Safety Check: If module is null (e.g., failed to link), skip.
+      if (!NativeGrapheneCore) {
+        console.warn("⚠️ GrapheneCore Native Module not found!");
+        setThermal("N/A");
+        return;
+      }
+
+      try {
+        // 2. Call C++ TurboModule
+        const level = await NativeGrapheneCore.getBatteryLevel();
+        const temp = await NativeGrapheneCore.getThermalState();
+
+        setBattery(level);
+        setThermal(temp);
+      } catch (e) {
+        console.error("GrapheneCore Error:", e);
+      }
+    };
+
+    monitorSystem();
+    const interval = setInterval(monitorSystem, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // --- WEBSOCKET LOGIC ---
+  const { data, status } = useOrderStream();
+
+  // Memoize data to prevent list flicker
   const orderData = useMemo(() => data || [], [data]);
 
-  if (isLoading && !data) {
+  // --- CONDITIONAL RENDERING STATES ---
+
+  // 1. Connecting State
+  if (status === 'CONNECTING' && (!data || data.length === 0)) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#00FF41" />
+        <Text style={[styles.statusText, { marginTop: 10 }]}>
+          ESTABLISHING UPLINK...
+        </Text>
       </View>
     );
   }
 
-  if (isError) {
+  // 2. Disconnected/Error State
+  if (status === 'DISCONNECTED' && (!data || data.length === 0)) {
     return (
       <View style={styles.center}>
-        <Text style={styles.error}>CONNECTION LOST</Text>
+        <Text style={[styles.error, { color: '#FF0055' }]}>
+          SIGNAL LOST
+        </Text>
+        <Text style={styles.statusText}>
+          RETRYING CONNECTION...
+        </Text>
       </View>
     );
   }
 
+  // 3. Main Render
   return (
     <View style={styles.container}>
+      {/* HEADER */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>LIVE MARKET DATA</Text>
-        <View style={styles.fpsContainer}>
-     <Text style={[styles.fpsText, { color: fps < 55 ? 'red' : '#00FF41' }]}>
-       {fps} FPS
-     </Text>
-     </View>
-        <View style={styles.liveIndicator} />
+        <Text style={styles.title}>GRAPHENE|TERMINAL</Text>
+        {/* Status Badge */}
+        <View style={styles.rightHeader}>
+          <View style={styles.connectionBadge}>
+            <View style={[
+              styles.indicator, 
+              { backgroundColor: status === 'CONNECTED' ? '#00FF41' : '#FF0055' }
+            ]} />
+            <Text style={styles.connectionText}>{status}</Text>
+          </View>
+        </View>
       </View>
+        <Text style={styles.subtitle}> Pair | Entry Price | Size USD | Leverage </Text>
+
+      {/* DATA LIST */}
       <OrderBookList data={orderData} />
+        <Text style={styles.subtitle}>BCH Real Time Onchain Order Book</Text>
+
+      {/* SYSTEM STATUS BAR */}
+      <View style={styles.statusBar}>
+        <Text style={styles.statusText}>
+          ⚡ POWER: {battery !== null ? (battery * 100).toFixed(0) + '%' : '---'}
+        </Text>
+        <Text style={styles.statusText}>
+          🌡 TEMP: {thermal?.toUpperCase() || '---'}
+        </Text>
+        <Text style={styles.statusText}>👾 FPS:{fps}
+        </Text>
+      </View>
     </View>
   );
 };
@@ -81,39 +120,83 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#000',
   },
+  // --- HEADER STYLES ---
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#333',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  headerTitle: {
-    color: '#00FF41',
-    fontWeight: 'bold',
-    fontSize: 16,
+  title: {
+    fontSize: 20,
+    fontWeight: '900',
+    color: '#E0E0E0',
     fontFamily: 'Courier',
+    letterSpacing: 1.2,
   },
-  liveIndicator: {
-    width: 8,
-    height: 8,
+  subtitle: {
+    fontSize: 14,
+    fontWeight: '900',
+    color: '#E0E0E0',
+    fontFamily: 'Courier',
+    letterSpacing: 1.1,
+    textAlign: 'center',
+    paddingVertical: 5
+  },
+  rightHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  // --- CONNECTION BADGE ---
+  connectionBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1a1a1a',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
     borderRadius: 4,
-    backgroundColor: '#00FF41',
+  },
+  indicator: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 6,
+  },
+  connectionText: {
+    color: '#888',
+    fontSize: 10,
+    fontFamily: 'Courier',
+    fontWeight: 'bold',
+  },
+  // --- FPS & ERROR ---
+  fpsText: {
+    color: '#444',
+    fontSize: 10,
+    fontFamily: 'Courier',
+    fontWeight: 'bold',
   },
   error: {
     color: '#FF0055',
     fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 8,
   },
-  //FPS
-  fpsContainer: {
+  // --- FOOTER STATUS BAR ---
+  statusBar: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    justifyContent: 'space-between',
+    padding: 12,
+    backgroundColor: '#111',
+    borderTopWidth: 1,
+    borderTopColor: '#333',
   },
-  fpsText: {
+  statusText: {
+    color: '#00FF41',
     fontFamily: 'Courier',
+    fontSize: 12,
     fontWeight: 'bold',
-    fontSize: 14,
   },
 });

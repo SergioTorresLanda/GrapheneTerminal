@@ -13,7 +13,7 @@ interface Props {
 }
 
 const OrderBookItemComponent = ({ item }: Props) => {
-  const isBuy = item.type === 'buy';
+  const isBuy = item.side === 'buy';
   
   const flashOpacity = useSharedValue(0);
 
@@ -42,14 +42,17 @@ const OrderBookItemComponent = ({ item }: Props) => {
       />
 
       {/* THE DATA LAYERS (Rendered on top of the flash) */}
+       <Text style={[styles.cell, styles.price]}>
+        {item.symbol}
+      </Text>
       <Text style={[styles.cell, styles.price, isBuy ? styles.buy : styles.sell]}>
         {item.price.toFixed(2)}
       </Text>
       <Text style={[styles.cell, styles.amount]}>
-        {item.amount.toFixed(4)}
+        {item.total.toFixed(1)}
       </Text>
       <Text style={[styles.cell, styles.total]}>
-        {item.total.toFixed(2)}
+        {item.amount.toFixed(1)}x
       </Text>
     </View>
   );
