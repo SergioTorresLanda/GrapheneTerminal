@@ -10,3 +10,5 @@ export interface Spec extends TurboModule {
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('GrapheneCore');
+
+//generates NativeGrapheneCoreSpec.h which holds C++ HostObject 

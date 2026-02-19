@@ -44,7 +44,7 @@
     "typescript": "^5.8.3"
   },
   "codegenConfig": {
-    "name": "GrapheneCoreSpec",
+    "name": "NativeGrapheneCoreSpec",
     "type": "modules",
     "jsSrcsDir": "src/specs",
     "android": {

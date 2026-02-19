@@ -292,6 +292,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "\"${PODS_ROOT}/Headers/Public\"/**";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -321,6 +322,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "GrapheneTerminal-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "\"${PODS_ROOT}/Headers/Public\"/**";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
