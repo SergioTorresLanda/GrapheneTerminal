@@ -16,6 +16,10 @@ if linkage != nil
 end
 
 target 'GrapheneTerminal' do
+  # --- WatermelonDB Manual Links ---
+  pod 'React-jsi', path: '../node_modules/react-native/ReactCommon/jsi', modular_headers: true
+  pod 'simdjson', path: '../node_modules/@nozbe/simdjson', modular_headers: true
+  
   config = use_native_modules!
 
   use_react_native!(
