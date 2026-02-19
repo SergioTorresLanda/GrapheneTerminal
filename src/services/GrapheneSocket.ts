@@ -1,5 +1,6 @@
 import { generateOrderBook } from '../utils/mockData'; 
 import { Order } from '../types';
+import { syncOrderBook } from '../db/sync';
 
 type SocketStatus = 'DISCONNECTED' | 'CONNECTING' | 'CONNECTED' | 'RECONNECTING';
 
@@ -41,13 +42,19 @@ class GrapheneSocket {
   private startDataStream() {
     if (this.mockInterval) clearInterval(this.mockInterval);
 
-    this.mockInterval = setInterval(() => {
+    this.mockInterval = setInterval(async () => {
       // 1. Generate new data
       const delta = generateOrderBook(); 
       
-      // 2. Broadcast to all listeners (The "Push")
+      try {
+        // 2a. Pipe to Disk (Offline-First Single Source of Truth)
+        // We await this so the UI only updates *after* the disk is secured.
+        await syncOrderBook(delta); 
+      } catch (error) {
+        console.error("[Database] Sync Failed:", error);
+      }
+      // 2b. Broadcast to all listeners (The "Push")
       this.subscribers.forEach(callback => callback(delta));
-      
       // 3. Log simulated heartbeat
       if (Math.random() > 0.9) console.log('[GrapheneSocket] Ping... Pong (12ms)');
       

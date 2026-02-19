@@ -6,7 +6,7 @@ export interface Order {
   price: number;
   amount: number;
   total: number;
-  side: string;
+  side: OrderType;
   timestamp: number;
 }
 // The raw data stream structure
