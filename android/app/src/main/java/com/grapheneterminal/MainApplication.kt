@@ -6,6 +6,7 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
+import com.grapheneterminal.modules.GrapheneCorePackage
 
 class MainApplication : Application(), ReactApplication {
 
@@ -24,4 +25,11 @@ class MainApplication : Application(), ReactApplication {
     super.onCreate()
     loadReactNative(this)
   }
+
+  override fun getPackages(): List<ReactPackage> {
+  val packages = PackageList(this).packages
+  // Packages that cannot be autolinked yet can be added manually here:
+  packages.add(GrapheneCorePackage()) // <--- ADD THIS
+  return packages
+}
 }
