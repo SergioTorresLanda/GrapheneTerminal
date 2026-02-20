@@ -7,7 +7,7 @@ export const syncOrderBook = async (incomingOrders: OrderType[]) => {
   await database.write(async () => {
     const ordersCollection = database.get<OrderModel>('orders');
 
-    // 1. Fetch current orders (The old snapshot)
+    // 1. Fetch current orders (The old snapshot) -static polling !
     const existingOrders = await ordersCollection.query().fetch();
     
     // 2. Prepare Deletions: Queue up the old rows for destruction

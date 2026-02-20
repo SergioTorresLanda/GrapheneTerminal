@@ -4,6 +4,7 @@ import { OrderBookList } from '../components/OrderBookList';
 import { useFPS } from '../hooks/useFPS';
 import NativeGrapheneCore from '../specs/NativeGrapheneCore';
 import { useOrderStream } from '../hooks/useOrderStream'; 
+import { useOrderBookFromDisk } from '../hooks/useOrderBookFromDisk'; 
 
 export const TerminalScreen = () => {
    
@@ -37,14 +38,18 @@ export const TerminalScreen = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // --- WEBSOCKET LOGIC ---
-  const { data, status } = useOrderStream();
+  // --- DIRECT WEBSOCKET LOGIC ---
+  //const { data, status } = useOrderStream();
+
+  // --- PERSISTANCE LAYER SQLite LOGIC ---
+  // The UI is now reading directly from SQLite!
+  const { data } = useOrderBookFromDisk();   
+  var status = 'CONNECTED';
 
   // Memoize data to prevent list flicker
   const orderData = useMemo(() => data || [], [data]);
 
   // --- CONDITIONAL RENDERING STATES ---
-
   // 1. Connecting State
   if (status === 'CONNECTING' && (!data || data.length === 0)) {
     return (
