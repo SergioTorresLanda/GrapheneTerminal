@@ -27,6 +27,7 @@ export const syncOrderBook = async (incomingOrders: OrderType[]) => {
         record.timestamp = order.timestamp;
       })
     );
+        console.log('[SQLite] writing.');
 
     // 4. THE MAGIC: Execute everything in ONE operation
     await database.batch(...deleteOperations, ...createOperations);

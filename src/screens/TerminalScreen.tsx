@@ -1,10 +1,12 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, Button } from 'react-native';
 import { OrderBookList } from '../components/OrderBookList';
 import { useFPS } from '../hooks/useFPS';
 import NativeGrapheneCore from '../specs/NativeGrapheneCore';
 import { useOrderStream } from '../hooks/useOrderStream'; 
 import { useOrderBookFromDisk } from '../hooks/useOrderBookFromDisk'; 
+import { grapheneSocket } from '../services/GrapheneSocket';
+import GraphenePnLView from '../specs/GraphenePnLNativeComponent';//nitro modules
 
 export const TerminalScreen = () => {
    
@@ -36,6 +38,18 @@ export const TerminalScreen = () => {
     monitorSystem();
     const interval = setInterval(monitorSystem, 5000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    grapheneSocket.connect(); 
+
+    const dummyCallback = () => {};
+    grapheneSocket.subscribe(dummyCallback);
+
+    return () => {
+      grapheneSocket.unsubscribe(dummyCallback);
+      grapheneSocket.disconnect(); 
+    };
   }, []);
 
   // --- DIRECT WEBSOCKET LOGIC ---
@@ -93,11 +107,11 @@ export const TerminalScreen = () => {
           </View>
         </View>
       </View>
-        <Text style={styles.subtitle}> Pair | Entry Price | Size USD | Leverage </Text>
+        <Text style={styles.subtitle}>| Pair | E. Price | Size USD | Leverage |</Text>
 
       {/* DATA LIST */}
       <OrderBookList data={orderData} />
-        <Text style={styles.subtitle}>BCH Real Time Onchain Order Book</Text>
+        <Text style={styles.subtitle2}>Real-Time OnChain Trading Order Book</Text>
 
       {/* SYSTEM STATUS BAR */}
       <View style={styles.statusBar}>
@@ -107,7 +121,7 @@ export const TerminalScreen = () => {
         <Text style={styles.statusText}>
           🌡 TEMP: {thermal?.toUpperCase() || '---'}
         </Text>
-        <Text style={styles.statusText}>👾 FPS:{fps}
+        <Text style={styles.statusText}>👾 FPS:{fps+'  '}
         </Text>
       </View>
     </View>
@@ -146,7 +160,16 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#E0E0E0',
     fontFamily: 'Courier',
-    letterSpacing: 1.1,
+    letterSpacing: 1.0,
+    textAlign: 'center',
+    paddingVertical: 5
+  },
+  subtitle2: {
+    fontSize: 14,
+    fontWeight: '900',
+    color: '#f2d977',
+    fontFamily: 'Courier',
+    letterSpacing: 1.0,
     textAlign: 'center',
     paddingVertical: 5
   },
@@ -193,15 +216,15 @@ const styles = StyleSheet.create({
   statusBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 12,
+    padding: 7,
     backgroundColor: '#111',
     borderTopWidth: 1,
-    borderTopColor: '#333',
+    borderTopColor: '#f2d977',
   },
   statusText: {
-    color: '#00FF41',
+    color: '#f2d977',
     fontFamily: 'Courier',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: 'bold',
   },
 });
