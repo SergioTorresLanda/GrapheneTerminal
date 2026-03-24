@@ -49,20 +49,20 @@ export const TerminalScreen = () => {
 
     const bootSequence = async () => {
       try {
-        // 1. Check Disk: Find the exact millisecond of the last trade we saw
+       // 1. Check Disk: Find the latest trade (sorted by timestamp to get the newest row)
         const latestOrders = await database.get<OrderModel>('orders').query(
           Q.sortBy('timestamp', Q.desc),
           Q.take(1)
         ).fetch();
         
-        // If the database is empty, start at time 0 (fetch everything)
-        const lastTimestamp = latestOrders.length > 0 ? latestOrders[0].timestamp : 0;
-        console.log(`[Boot] Last known trade timestamp: ${lastTimestamp}`);
+        // Extract the ID of the last known trade (fallback to 0 if DB is empty)
+        const lastKnownId = latestOrders.length > 0 ? parseInt(latestOrders[0].id, 10) : 0;
+        console.log(`[Boot] Last known trade ID: ${lastKnownId}`);
 
-        // 2. Catch Up: Ask Go for the missing delta
+        // 2. Catch Up: Ask Go for the exact missing sequence
         const apiUrl = Platform.OS === 'android' 
-          ? `http://10.0.2.2:8080/api/v1/trades?since=${lastTimestamp}` 
-          : `http://localhost:8080/api/v1/trades?since=${lastTimestamp}`;
+          ? `http://10.0.2.2:8080/api/v1/trades?last_id=${lastKnownId}` 
+          : `http://localhost:8080/api/v1/trades?last_id=${lastKnownId}`;
 
         const response = await fetch(apiUrl);
         const missedTrades = await response.json();
