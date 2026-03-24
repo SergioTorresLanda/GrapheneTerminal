@@ -7,13 +7,13 @@ export const syncOrderBook = async (incomingOrders: OrderType[]) => {
   await database.write(async () => {
     const ordersCollection = database.get<OrderModel>('orders');
 
-    // 1. Fetch current orders (The old snapshot) -static polling !
-    const existingOrders = await ordersCollection.query().fetch();
+    // 1. Fetch current orders (The old snapshot) -static polling ! (Mock Data)
+   // const existingOrders = await ordersCollection.query().fetch();
     
-    // 2. Prepare Deletions: Queue up the old rows for destruction
-    const deleteOperations = existingOrders.map(order => 
+    // 2. Prepare Deletions: Queue up the old rows for destruction (Mock Data)
+   /* const deleteOperations = existingOrders.map(order => 
       order.prepareDestroyPermanently()
-    );
+    );*/
 
     // 3. Prepare Insertions: Queue up the new rows
     const createOperations = incomingOrders.map(order =>
@@ -27,9 +27,11 @@ export const syncOrderBook = async (incomingOrders: OrderType[]) => {
         record.timestamp = order.timestamp;
       })
     );
-        console.log('[SQLite] writing.');
+    
+    console.log('[SQLite] Appending ${incomingOrders.length} new trades to the ledger.');
 
     // 4. THE MAGIC: Execute everything in ONE operation
-    await database.batch(...deleteOperations, ...createOperations);
+    await database.batch(...createOperations);//...deleteOperations, 
   });
+  
 };

@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, Button } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, Button , Platform} from 'react-native';
 import { OrderBookList } from '../components/OrderBookList';
 import { useFPS } from '../hooks/useFPS';
 import NativeGrapheneCore from '../specs/NativeGrapheneCore';
@@ -7,6 +7,10 @@ import { useOrderStream } from '../hooks/useOrderStream';
 import { useOrderBookFromDisk } from '../hooks/useOrderBookFromDisk'; 
 import { grapheneSocket } from '../services/GrapheneSocket';
 import GraphenePnLView from '../specs/GraphenePnLNativeComponent';//nitro modules
+import { database } from '../db';
+import OrderModel from '../db/Order'; 
+import { Q } from '@nozbe/watermelondb';
+import { syncOrderBook } from '../db/sync';
 
 export const TerminalScreen = () => {
    
@@ -41,17 +45,67 @@ export const TerminalScreen = () => {
   }, []);
 
   useEffect(() => {
-    grapheneSocket.connect(); 
+    let isMounted = true; // Prevents state updates if the user closes the screen instantly
 
-    const dummyCallback = () => {};
-    grapheneSocket.subscribe(dummyCallback);
+    const bootSequence = async () => {
+      try {
+        // 1. Check Disk: Find the exact millisecond of the last trade we saw
+        const latestOrders = await database.get<OrderModel>('orders').query(
+          Q.sortBy('timestamp', Q.desc),
+          Q.take(1)
+        ).fetch();
+        
+        // If the database is empty, start at time 0 (fetch everything)
+        const lastTimestamp = latestOrders.length > 0 ? latestOrders[0].timestamp : 0;
+        console.log(`[Boot] Last known trade timestamp: ${lastTimestamp}`);
 
+        // 2. Catch Up: Ask Go for the missing delta
+        const apiUrl = Platform.OS === 'android' 
+          ? `http://10.0.2.2:8080/api/v1/trades?since=${lastTimestamp}` 
+          : `http://localhost:8080/api/v1/trades?since=${lastTimestamp}`;
+
+        const response = await fetch(apiUrl);
+        const missedTrades = await response.json();
+
+        // 3. Sync: If Go sent us trades we missed while offline, save them to SQLite
+        if (missedTrades && missedTrades.length > 0) {
+          console.log(`[Boot] Catching up on ${missedTrades.length} missed trades...`);
+          
+          const formattedTrades = missedTrades.map((t: any) => ({
+            id: t.id.toString(),
+            symbol: t.symbol,
+            price: t.price,
+            amount: t.amount,
+            total: Number((t.price * t.amount).toFixed(2)),
+            side: t.side,
+            timestamp: new Date(t.timestamp).getTime(),
+          }));
+
+          await syncOrderBook(formattedTrades);
+        } else {
+          console.log('[Boot] App is completely up to date. No missed trades.');
+        }
+
+        // 4. Go Live: Now that history is perfect, open the live pipe
+        if (isMounted) {
+          grapheneSocket.connect();
+        }
+
+      } catch (error) {
+        console.error("[Boot] Initialization failed:", error);
+      }
+    };
+
+    // Execute the boot sequence
+    bootSequence();
+
+    // The Cleanup
     return () => {
-      grapheneSocket.unsubscribe(dummyCallback);
+      isMounted = false;
       grapheneSocket.disconnect(); 
     };
   }, []);
-
+  
   // --- DIRECT WEBSOCKET LOGIC ---
   //const { data, status } = useOrderStream();
 
