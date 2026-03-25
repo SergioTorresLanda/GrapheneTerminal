@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, Button , Platform} from 'react-native';
 import { OrderBookList } from '../components/OrderBookList';
+import { TradeControls } from '../screens/TradeControls';
 import { useFPS } from '../hooks/useFPS';
 import NativeGrapheneCore from '../specs/NativeGrapheneCore';
 import { useOrderStream } from '../hooks/useOrderStream'; 
@@ -165,7 +166,8 @@ export const TerminalScreen = () => {
 
       {/* DATA LIST */}
       <OrderBookList data={orderData} />
-        <Text style={styles.subtitle2}>Real-Time OnChain Trading Order Book</Text>
+      <TradeControls />
+        <Text style={styles.subtitle2}>Real-Time Trading Order Book</Text>
 
       {/* SYSTEM STATUS BAR */}
       <View style={styles.statusBar}>
