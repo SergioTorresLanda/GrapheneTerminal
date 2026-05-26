@@ -29,3 +29,9 @@ export const useOrderStream = () => {
 
   return { data, status };
 };
+//Real-Time Network Ingestion Layer via a custom React hook
+
+//This hook manages the active lifecycle of your low-latency connection within a React component. 
+//It initializes the socket on mount, handles multiplexed pub/sub callbacks for incoming data arrays,
+//exposes real-time connection telemetry (status), and completely cleans up its listeners and connections
+//upon unmounting to preserve network resources

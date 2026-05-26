@@ -12,3 +12,5 @@ export default class Order extends Model {
   @field('side') side!: 'buy' | 'sell';
   @field('timestamp') timestamp!: number;
 }
+
+//dictates how JavaScript interacts with an individual record 'Order'

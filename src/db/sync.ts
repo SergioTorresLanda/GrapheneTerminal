@@ -18,6 +18,7 @@ export const syncOrderBook = async (incomingOrders: OrderType[]) => {
     // 3. Prepare Insertions: Queue up the new rows
     const createOperations = incomingOrders.map(order =>
       ordersCollection.prepareCreate(record => {
+        //instantiates memory-only record objects inside the JS runtime (an $O(1)$ synchronous memory operation).
         // We inject the exact data from the WebSocket
         record.symbol = order.symbol;
         record.price = order.price;
@@ -32,6 +33,30 @@ export const syncOrderBook = async (incomingOrders: OrderType[]) => {
 
     // 4. THE MAGIC: Execute everything in ONE operation
     await database.batch(...createOperations);//...deleteOperations, 
+    //sends the entire array of operations across the JSI boundary to SQLite to be committed in a single disk I/O operation. 
+    // This allows you to append dozens or hundreds of orders with near-zero overhead.
   });
   
 };
+
+export const handleDeleteDB = async () => {
+   //here the logics to delete everyhting...
+}
+
+export const clearOrdersOnly = async (): Promise<void> => {
+  await database.write(async () => {
+    const ordersCollection = database.get('orders');
+    
+    // Fetch only the keys/IDs from SQLite, not the full property models
+    const allOrders = await ordersCollection.query().fetch();
+    
+    // Prepare them all for destruction in memory
+    const purgeOperations = allOrders.map(order => order.prepareDestroyPermanently());
+    
+    // Send the batch command across the JSI boundary in a single transaction
+    await database.batch(...purgeOperations);
+  });
+};
+
+//Data Synchronization Layer / Repository Pattern
+//highly optimized, transactional gateway to mutate the local database

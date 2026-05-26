@@ -52,7 +52,7 @@ const OrderBookItemComponent = ({ item }: Props) => {
         {item.total.toFixed(1)}
       </Text>
       <Text style={[styles.cell, styles.total]}>
-        {item.amount.toFixed(1)}x
+        {item.amount.toFixed(1)}
       </Text>
     </View>
   );
@@ -88,3 +88,5 @@ const styles = StyleSheet.create({
   buy: { color: '#00FF41' },
   sell: { color: '#FF0055' },
 });
+
+//Individual Cell Component for the Order Book.

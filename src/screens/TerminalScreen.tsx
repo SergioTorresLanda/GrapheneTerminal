@@ -13,7 +13,7 @@ import OrderModel from '../db/Order';
 import { Q } from '@nozbe/watermelondb';
 import { syncOrderBook } from '../db/sync';
 
-export const TerminalScreen = () => {
+export const TerminalScreen = ({ navigation }) => {
    
   const [battery, setBattery] = useState<number | null>(null);
   const [thermal, setThermal] = useState<string>('Checking...');

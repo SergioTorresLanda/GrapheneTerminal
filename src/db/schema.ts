@@ -6,7 +6,7 @@ export default appSchema({
     tableSchema({
       name: 'orders',
       columns: [
-        { name: 'symbol', type: 'string', isIndexed: true },
+        { name: 'symbol', type: 'string', isIndexed: true }, //O(log N) vs. O(N) 
         { name: 'price', type: 'number' },
         { name: 'amount', type: 'number' },
         { name: 'total', type: 'number' },
@@ -16,3 +16,8 @@ export default appSchema({
     }),
   ]
 });
+
+//this schema dictates exactly how the underlying native database (SQLite) 
+//allocates, structures, and indexes that data on disk.
+
+

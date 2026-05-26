@@ -21,3 +21,5 @@ export const database = new Database({
     Order,
   ],
 });
+
+//Database Initialization and Context Assembly module

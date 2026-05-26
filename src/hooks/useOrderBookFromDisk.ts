@@ -21,3 +21,7 @@ export const useOrderBookFromDisk = () => {
 
   return { data };
 };
+
+//This custom hook establishes an asynchronous, reactive pipeline directly between the native SQLite database file
+// and the React component lifecycle. It ensures that any component invoking useOrderBookFromDisk automatically 
+// stays in perfect sync with the underlying database disk space without requiring any polling or context wrappers.

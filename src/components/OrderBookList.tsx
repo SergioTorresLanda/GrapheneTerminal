@@ -49,3 +49,10 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   }
 });
+
+//UI Presentation Layer for the Order Book
+
+//This component is a highly optimized, structural scroll container 
+//responsible for displaying a massive list of fast-updating trading orders. 
+// It focuses entirely on memory conservation and UI thread 
+// fluidness during rapid-fire data streams.
