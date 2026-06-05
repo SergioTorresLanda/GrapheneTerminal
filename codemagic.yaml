@@ -53,6 +53,15 @@ workflows:
         script: |
           cd ios
           pod install
+      
+      - name: Generate React Native Offline Bundle
+        script: |
+          npx react-native bundle \
+            --entry-file index.js \
+            --platform ios \
+            --dev false \
+            --bundle-output ios/main.jsbundle \
+            --assets-dest ios
         
       - name: Generate Export Options & Link Profiles
         script: |
