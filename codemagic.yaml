@@ -15,6 +15,12 @@ workflows:
     environment:
       groups:
         - production
+      
+      ios_signing:
+
+        distribution_type: app_store
+        bundle_identifier: com.apkings.grapheneterminal
+    
       vars:
         XCODE_WORKSPACE: "ios/GrapheneTerminal.xcworkspace"
         XCODE_SCHEME: "GrapheneTerminal"
@@ -47,20 +53,6 @@ workflows:
         script: |
           cd ios
           pod install
-
-      - name: Initialize App Store Connect Code Signing
-        script: |
-          echo "1. Initializing remote keychain..."
-          keychain initialize
-          
-          echo "2. Fetching certificates and profiles from Apple..."
-          app-store-connect fetch-signing-files $(xcode-project detect-bundle-id) --type IOS_APP_STORE --create
-          
-          echo "3. Adding fetched certificates to keychain..."
-          keychain add-certificates
-          
-          echo "4. Linking profiles to Xcode workspace..."
-          xcode-project use-profiles
 
       - name: Build iOS Release Archive (.ipa)
         script: |
