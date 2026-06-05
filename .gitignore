@@ -85,3 +85,5 @@ yarn-error.log
 
 # Logs
 *.log
+
+ios/GeneratedDotEnv.m

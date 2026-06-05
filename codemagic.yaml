@@ -1,0 +1,60 @@
+workflows:
+  ios-release:
+    name: iOS Release & TestFlight
+    # This automatically triggers a build when you push to the main branch
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+          source: true
+    environment:
+      groups:
+        - production
+      vars:
+        XCODE_WORKSPACE: "ios/GrapheneTerminal.xcworkspace"
+        XCODE_SCHEME: "GrapheneTerminal"
+      node: latest
+      xcode: latest # This bypasses your local Xcode 16.2 limitation by using Apple's latest SDK
+      cocoapods: default
+    scripts:
+      - name: Install JS Dependencies
+        script: npm install
+        
+      - name: Inject Production Environment Variables
+        script: |
+          echo "Generating native config for production..."
+          cat <<EOF > ios/GrapheneTerminal/GeneratedDotEnv.m
+          #import <Foundation/Foundation.h>
+
+          @interface GeneratedDotEnv : NSObject
+          + (NSString *)apiUrl;
+          @end
+
+          @implementation GeneratedDotEnv
+          + (NSString *)apiUrl {
+              return @"$API_URL";
+          }
+          @end
+          EOF
+          echo "Native configuration successfully injected."
+
+      - name: Install CocoaPods
+        script: |
+          cd ios
+          pod install
+
+      - name: Build iOS Release Archive (.ipa)
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME" \
+            --config Release
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
