@@ -62,6 +62,18 @@ workflows:
             --dev false \
             --bundle-output ios/main.jsbundle \
             --assets-dest ios
+
+      - name: Pre-generate React Native Config Environments
+        script: |
+          echo "Creating environment profile..."
+          # Creates a fallback .env file if it's missing in CI
+          touch .env
+          
+          # Force execute the react-native-config script to output GeneratedDotEnv.m
+          cd ios
+          if [ -f "../node_modules/react-native-config/ios/ReactNativeConfig/BuildDotenvConfig.rb" ]; then
+            ruby ../node_modules/react-native-config/ios/ReactNativeConfig/BuildDotenvConfig.rb
+          fi
         
       - name: Generate Export Options & Link Profiles
         script: |
