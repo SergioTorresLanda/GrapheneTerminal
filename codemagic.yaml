@@ -1,7 +1,10 @@
 workflows:
   ios-release:
     name: iOS Release & TestFlight
-    # This automatically triggers a build when you push to the main branch
+    # 1. Add this block right below the workflow name:
+    integrations:
+      app_store_connect: "apkingsAPIkeyCICD"
+      
     triggering:
       events:
         - push
@@ -16,7 +19,7 @@ workflows:
         XCODE_WORKSPACE: "ios/GrapheneTerminal.xcworkspace"
         XCODE_SCHEME: "GrapheneTerminal"
       node: latest
-      xcode: latest # This bypasses your local Xcode 16.2 limitation by using Apple's latest SDK
+      xcode: latest
       cocoapods: default
     scripts:
       - name: Install JS Dependencies
