@@ -1,6 +1,6 @@
 import { QueryClient, focusManager, onlineManager } from '@tanstack/react-query';
 import { AppState, AppStateStatus } from 'react-native';
-import NetInfo from '@react-native-community/netinfo';
+//import NetInfo from '@react-native-community/netinfo';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,11 +17,12 @@ export const queryClient = new QueryClient({
 });
 
 // Sync with Network State
-onlineManager.setEventListener((setOnline) => {
-  return NetInfo.addEventListener((state) => {
+//onlineManager.setEventListener((setOnline) => {
+  /*return NetInfo.addEventListener((state) => {
     setOnline(!!state.isConnected);
-  });
-});
+  });*/
+  //return true
+//});
 
 // Sync with App Focus
 AppState.addEventListener('change', (status: AppStateStatus) => {

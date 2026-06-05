@@ -38,12 +38,21 @@ target 'GrapheneTerminal' do
   
     # The Compiler Override
     installer.pods_project.targets.each do |target|
+      #
       target.build_configurations.each do |config|
         #Fix for the C++ headers
         config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
       end
+      
+      # Fix for MMKV Win32 symbol errors
+          if target.name == 'MMKVCore'
+            target.source_build_phase.files.each do |file|
+              if file.file_ref.path.include?('Win32')
+                file.file_ref.remove_from_project
+              end
+            end
+          end
     end
-  
   end
 end

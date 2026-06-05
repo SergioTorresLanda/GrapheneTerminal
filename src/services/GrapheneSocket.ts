@@ -2,26 +2,38 @@ import { generateOrderBook } from '../utils/mockData';
 import { Order } from '../types';
 import { syncOrderBook } from '../db/sync';
 import { Platform } from 'react-native';
+import Config from "react-native-config";
 
 type SocketStatus = 'DISCONNECTED' | 'CONNECTING' | 'CONNECTED' | 'RECONNECTING';
+const baseUrl = Config.API_URL || '';
+if (!baseUrl) {
+  console.error("CRITICAL: API_URL is not defined in your .env file!");
+}
+
+// WebSocket Connection
+// Note: WebSocket needs 'wss' for secure connections in production
+const wsUrl = baseUrl 
+  ? baseUrl.replace(/^https?/, (match) => match === 'https' ? 'wss' : 'ws') + '/ws'
+  : '';
 
 class GrapheneSocket {
   // 💡iOS Simulator uses localhost, Android Emulator uses 10.0.2.2
-  private url: string = Platform.OS === 'android' 
-    ? 'ws://10.0.2.2:8080/ws' 
-    : 'ws://localhost:8080/ws';
-  //private url: string = 'wss://stream.graphene.trade/v1/market'; // production
+  //private url: string = Platform.OS === 'android' 
+    //? 'ws://10.0.2.2:8080/ws' 
+    //: 'ws://localhost:8080/ws';
+  // Use the exact key you defined in your .env file
+  
   private status: SocketStatus = 'DISCONNECTED';
   private ws: WebSocket | null = null;
   private mockInterval: ReturnType<typeof setInterval> | null = null; //Mock Data
   private subscribers: ((data: Order[]) => void)[] = [];
 
   connect() {
-    console.log(`[GrapheneSocket] Initializing handshake with ${this.url}...`);
+    console.log(`[GrapheneSocket] Initializing handshake with ${wsUrl}...`);
     this.status = 'CONNECTING';
 
   // 1. Initialize Native React Native WebSocket
-    this.ws = new WebSocket(this.url);
+    this.ws = new WebSocket(wsUrl);
   // 2. Handle Successful Connection
     this.ws.onopen = () => {
       this.status = 'CONNECTED';

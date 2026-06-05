@@ -2,8 +2,6 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, Button , Platform} from 'react-native';
 import { OrderBookList } from '../components/OrderBookList';
 import { TradeControls } from '../screens/TradeControls';
-import { useFPS } from '../hooks/useFPS';
-import NativeGrapheneCore from '../specs/NativeGrapheneCore';
 import { useOrderStream } from '../hooks/useOrderStream'; 
 import { useOrderBookFromDisk } from '../hooks/useOrderBookFromDisk'; 
 import { grapheneSocket } from '../services/GrapheneSocket';
@@ -12,41 +10,15 @@ import { database } from '../db';
 import OrderModel from '../db/Order'; 
 import { Q } from '@nozbe/watermelondb';
 import { syncOrderBook } from '../db/sync';
+import Config from "react-native-config";
 
-export const TerminalScreen = ({ navigation }) => {
-   
-  const [battery, setBattery] = useState<number | null>(null);
-  const [thermal, setThermal] = useState<string>('Checking...');
-  const fps = useFPS(); // Performance Monitor
+const baseUrl = Config.API_URL || '';
 
-  useEffect(() => {
-    const monitorSystem = async () => {
-      // 1. Safety Check: If module is null (e.g., failed to link), skip.
-      if (!NativeGrapheneCore) {
-        console.warn("⚠️ GrapheneCore Native Module not found!");
-        setThermal("N/A");
-        return;
-      }
-
-      try {
-        // 2. Call C++ TurboModule
-        const level = await NativeGrapheneCore.getBatteryLevel();
-        const temp = await NativeGrapheneCore.getThermalState();
-
-        setBattery(level);
-        setThermal(temp);
-      } catch (e) {
-        console.error("GrapheneCore Error:", e);
-      }
-    };
-
-    monitorSystem();
-    const interval = setInterval(monitorSystem, 5000);
-    return () => clearInterval(interval);
-  }, []);
+export const TerminalScreen = () => {
 
   useEffect(() => {
     let isMounted = true; // Prevents state updates if the user closes the screen instantly
+    
 
     const bootSequence = async () => {
       try {
@@ -61,9 +33,12 @@ export const TerminalScreen = ({ navigation }) => {
         console.log(`[Boot] Last known trade ID: ${lastKnownId}`);
 
         // 2. Catch Up: Ask Go for the exact missing sequence
-        const apiUrl = Platform.OS === 'android' 
-          ? `http://10.0.2.2:8080/api/v1/trades?last_id=${lastKnownId}` 
-          : `http://localhost:8080/api/v1/trades?last_id=${lastKnownId}`;
+        const apiUrl = baseUrl ? `${baseUrl}/api/v1/trades?last_id=${lastKnownId}` : '';
+        console.log("--- DEBUGGING URL ---");
+        console.log("TerminalScreen URL :", apiUrl );
+       // const apiUrl = Platform.OS === 'android' 
+         // ? `http://10.0.2.2:8080/api/v1/trades?last_id=${lastKnownId}` 
+          //: `http://localhost:8080/api/v1/trades?last_id=${lastKnownId}`;
 
         const response = await fetch(apiUrl);
         const missedTrades = await response.json();
@@ -166,20 +141,7 @@ export const TerminalScreen = ({ navigation }) => {
 
       {/* DATA LIST */}
       <OrderBookList data={orderData} />
-      <TradeControls />
-        <Text style={styles.subtitle2}>Real-Time Trading Order Book</Text>
-
-      {/* SYSTEM STATUS BAR */}
-      <View style={styles.statusBar}>
-        <Text style={styles.statusText}>
-          ⚡ POWER: {battery !== null ? (battery * 100).toFixed(0) + '%' : '---'}
-        </Text>
-        <Text style={styles.statusText}>
-          🌡 TEMP: {thermal?.toUpperCase() || '---'}
-        </Text>
-        <Text style={styles.statusText}>👾 FPS:{fps+'  '}
-        </Text>
-      </View>
+        <Text style={styles.subtitle2}>Real-Time Global Order Book</Text>
     </View>
   );
 };
@@ -254,33 +216,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: 'Courier',
     fontWeight: 'bold',
-  },
-  // --- FPS & ERROR ---
-  fpsText: {
-    color: '#444',
-    fontSize: 10,
-    fontFamily: 'Courier',
-    fontWeight: 'bold',
-  },
-  error: {
-    color: '#FF0055',
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  // --- FOOTER STATUS BAR ---
-  statusBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 7,
-    backgroundColor: '#111',
-    borderTopWidth: 1,
-    borderTopColor: '#f2d977',
-  },
-  statusText: {
-    color: '#f2d977',
-    fontFamily: 'Courier',
-    fontSize: 13,
-    fontWeight: 'bold',
-  },
+  }
+
 });

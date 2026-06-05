@@ -49,10 +49,10 @@ const OrderBookItemComponent = ({ item }: Props) => {
         {item.price.toFixed(2)}
       </Text>
       <Text style={[styles.cell, styles.amount]}>
-        {item.total.toFixed(1)}
+        {item.amount.toFixed(1)}
       </Text>
       <Text style={[styles.cell, styles.total]}>
-        {item.amount.toFixed(1)}
+        {(Number(item.amount) / 100).toFixed(0)}x
       </Text>
     </View>
   );

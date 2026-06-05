@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,6 +11,8 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		442CE12C2F4686650085223E /* GrapheneCoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442CE12B2F4686650085223E /* GrapheneCoreImpl.swift */; };
 		442CE12D2F4686650085223E /* GrapheneCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 442CE12A2F4686650085223E /* GrapheneCore.mm */; };
+		448A258F2FCDC1A5006BE16E /* GeneratedDotEnv.m in Sources */ = {isa = PBXBuildFile; fileRef = 448A258E2FCDC1A5006BE16E /* GeneratedDotEnv.m */; };
+		44F9DC532FCD6390008B6068 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 44F9DC522FCD6390008B6068 /* main.jsbundle */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		7D630A5145005399E5E88FD5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -26,16 +28,14 @@
 		442CE12A2F4686650085223E /* GrapheneCore.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GrapheneCore.mm; sourceTree = "<group>"; };
 		442CE12B2F4686650085223E /* GrapheneCoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrapheneCoreImpl.swift; sourceTree = "<group>"; };
 		442CE12E2F4686800085223E /* GrapheneTerminal-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GrapheneTerminal-Bridging-Header.h"; sourceTree = "<group>"; };
+		448A258E2FCDC1A5006BE16E /* GeneratedDotEnv.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GeneratedDotEnv.m; sourceTree = "<group>"; };
+		44F9DC522FCD6390008B6068 /* main.jsbundle */ = {isa = PBXFileReference; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-GrapheneTerminal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GrapheneTerminal.release.xcconfig"; path = "Target Support Files/Pods-GrapheneTerminal/Pods-GrapheneTerminal.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-GrapheneTerminal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GrapheneTerminal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = GrapheneTerminal/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = GrapheneTerminal/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		441E891D2F5B4F9D00391BD5 /* PnL */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PnL; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
@@ -52,7 +52,8 @@
 		13B07FAE1A68108700A75B9A /* GrapheneTerminal */ = {
 			isa = PBXGroup;
 			children = (
-				441E891D2F5B4F9D00391BD5 /* PnL */,
+				448A258E2FCDC1A5006BE16E /* GeneratedDotEnv.m */,
+				44F9DC522FCD6390008B6068 /* main.jsbundle */,
 				442CE1292F4686650085223E /* GrapheneCore.h */,
 				442CE12A2F4686650085223E /* GrapheneCore.mm */,
 				442CE12B2F4686650085223E /* GrapheneCoreImpl.swift */,
@@ -127,13 +128,11 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
 				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				442021C42FCD54C5005EBCE8 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				441E891D2F5B4F9D00391BD5 /* PnL */,
 			);
 			name = GrapheneTerminal;
 			productName = GrapheneTerminal;
@@ -179,6 +178,7 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				7D630A5145005399E5E88FD5 /* PrivacyInfo.xcprivacy in Resources */,
+				44F9DC532FCD6390008B6068 /* main.jsbundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,6 +217,23 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GrapheneTerminal/Pods-GrapheneTerminal-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		442021C42FCD54C5005EBCE8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\nexport NODE_BINARY=node\n# Pass only the root path\n#\"${SRCROOT}/../node_modules/react-native-config/ios/ReactNativeConfig/BuildDotenvConfig.rb\" \"${SRCROOT}/..\"\n";
 		};
 		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -267,6 +284,7 @@
 				442CE12C2F4686650085223E /* GrapheneCoreImpl.swift in Sources */,
 				442CE12D2F4686650085223E /* GrapheneCore.mm in Sources */,
 				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
+				448A258F2FCDC1A5006BE16E /* GeneratedDotEnv.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,19 +298,21 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = MUDF5363RA;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = GrapheneTerminal/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AuraTrades;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.apkings.grapheneterminal;
 				PRODUCT_NAME = GrapheneTerminal;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OBJC_BRIDGING_HEADER = "GrapheneTerminal-Bridging-Header.h";
@@ -312,18 +332,20 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = MUDF5363RA;
 				INFOPLIST_FILE = GrapheneTerminal/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AuraTrades;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.apkings.grapheneterminal;
 				PRODUCT_NAME = GrapheneTerminal;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OBJC_BRIDGING_HEADER = "GrapheneTerminal-Bridging-Header.h";
