@@ -63,17 +63,15 @@ workflows:
             --bundle-output ios/main.jsbundle \
             --assets-dest ios
 
-      - name: Pre-generate React Native Config Environments
+      - name: Create Production Env File
         script: |
-          echo "Creating environment profile..."
-          # Creates a fallback .env file if it's missing in CI
+          echo "Seeding production environment configuration..."
+          # This ensures the file exists so Xcode's build phase triggers correctly
           touch .env
           
-          # Force execute the react-native-config script to output GeneratedDotEnv.m
-          cd ios
-          if [ -f "../node_modules/react-native-config/ios/ReactNativeConfig/BuildDotenvConfig.rb" ]; then
-            ruby ../node_modules/react-native-config/ios/ReactNativeConfig/BuildDotenvConfig.rb
-          fi
+          # Optional: If your app requires real production values at build time, 
+          # you can echo them here using your Codemagic environment variables:
+          # echo "API_URL=$PRODUCTION_API_URL" >> .env
         
       - name: Generate Export Options & Link Profiles
         script: |
