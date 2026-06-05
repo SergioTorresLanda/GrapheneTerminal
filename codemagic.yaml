@@ -66,12 +66,17 @@ workflows:
       - name: Create Production Env File
         script: |
           echo "Seeding production environment configuration..."
-          # This ensures the file exists so Xcode's build phase triggers correctly
           touch .env
           
-          # Optional: If your app requires real production values at build time, 
-          # you can echo them here using your Codemagic environment variables:
-          # echo "API_URL=$PRODUCTION_API_URL" >> .env
+          # Manually stub GeneratedDotEnv files to satisfy Xcode's early dependency scan
+          echo "Creating GeneratedDotEnv stubs..."
+          cat <<EOF > ios/GeneratedDotEnv.h
+          #define DOT_ENV @{  }
+          EOF
+
+          cat <<EOF > ios/GeneratedDotEnv.m
+          #import "GeneratedDotEnv.h"
+          EOF
         
       - name: Generate Export Options & Link Profiles
         script: |
