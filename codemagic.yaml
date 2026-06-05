@@ -53,6 +53,10 @@ workflows:
         script: |
           cd ios
           pod install
+        
+      - name: Generate Export Options & Link Profiles
+        script: |
+          xcode-project use-profiles
 
       - name: Build iOS Release Archive (.ipa)
         script: |
