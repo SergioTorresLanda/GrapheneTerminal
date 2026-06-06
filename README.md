@@ -1,6 +1,9 @@
 # 🎯 Graphene Terminal 🎯
 A high-performance, next-generation digital asset trading terminal built with React Native's New Architecture and a highly concurrent Go backend. Graphene Terminal is engineered for sub-millisecond real-time market data streaming, fluid 60fps UI performance under high-frequency state propagation, and bulletproof offline-first data persistence.
 
+### TestFlight URL
+https://testflight.apple.com/join/uD7vPp21
+
 ## Features
 
 ### Live Order Book & Ticker Streaming
@@ -61,3 +64,5 @@ Built around pure Go primitives, using goroutines for non-blocking network socke
 
 ### CI/CD Pipeline Configuration
 The release workflow is entirely automated using Codemagic, guaranteeing continuous integration and clean deployment directly to Apple TestFlight.
+
+
