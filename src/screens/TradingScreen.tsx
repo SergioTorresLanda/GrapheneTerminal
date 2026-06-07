@@ -35,9 +35,9 @@ const baseUrl = Config.API_URL || '';
 const apiUrl = baseUrl ? `${baseUrl}/api/v1/trades` : '';
 // 1. Static mock prices for immediate execution
 const MOCK_PRICES = {
-  BTC: 68500.20, ETH: 3750.50, SOL: 165.30, ADA: 0.45, 
-  BCH: 450.00, DOGE: 0.16, TON: 6.20, XRP: 0.52, 
-  BNB: 610.00, TRON: 0.11, SUI: 2.45, XMR: 145.80
+  BTC: 60555.20, ETH: 1354.50, SOL: 75.30, ADA: 0.18, 
+  BCH: 215.00, DOGE: 0.11, TON: 1.82, XRP: 0.32, 
+  BNB: 310.00, TRON: 0.41, SUI: 1.45, XMR: 345.80
 };
 
 const AVAILABLE_PAIRS = Object.keys(MOCK_PRICES);

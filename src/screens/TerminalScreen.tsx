@@ -11,6 +11,7 @@ import OrderModel from '../db/Order';
 import { Q } from '@nozbe/watermelondb';
 import { syncOrderBook } from '../db/sync';
 import Config from "react-native-config";
+import { clearOrdersOnly } from '../db/sync';
 
 const baseUrl = Config.API_URL || '';
 
@@ -57,7 +58,7 @@ export const TerminalScreen = () => {
             timestamp: new Date(t.timestamp).getTime(),
           }));
 
-          await syncOrderBook(formattedTrades);
+          //await syncOrderBook(formattedTrades);
         } else {
           console.log('[Boot] App is completely up to date. No missed trades.');
         }
@@ -82,6 +83,17 @@ export const TerminalScreen = () => {
     };
   }, []);
   
+  useEffect(() => {
+    // 1. Create the interval and store its ID
+    const intervalId = setInterval(() => {
+      clearOrdersOnly();
+    }, 8000); 
+
+    // 2. The Cleanup Function (Crucial for Memory Safety)
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
   // --- DIRECT WEBSOCKET LOGIC ---
   //const { data, status } = useOrderStream();
 
