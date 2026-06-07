@@ -62,13 +62,18 @@ workflows:
             --dev false \
             --bundle-output ios/main.jsbundle \
             --assets-dest ios
-
+        
+        # 2. SEED THE ENVS AND STUB IMPLEMENTATION FILES
       - name: Create Production Env File
         script: |
           echo "Seeding production environment configuration..."
           touch .env
           
-          # Manually stub GeneratedDotEnv files to satisfy Xcode's early dependency scan
+          # Securely pull variables from the Codemagic vault
+          echo "API_URL=$API_URL" >> .env
+          echo "WS_URL=$WS_URL" >> .env
+          
+          # Manually stub GeneratedDotEnv files
           echo "Creating GeneratedDotEnv stubs..."
           cat <<EOF > ios/GeneratedDotEnv.h
           #define DOT_ENV @{  }
